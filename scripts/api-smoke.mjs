@@ -18,7 +18,7 @@ async function waitForApi() {
     if (error.cause?.code !== 'ECONNREFUSED') throw error
   }
 
-  serverProcess = spawn(process.execPath, ['--import', 'tsx', 'server/index.ts'], {
+  serverProcess = spawn(process.execPath, ['--import', 'tsx', 'backend/src/index.ts'], {
     cwd: appDirectory,
     stdio: 'ignore',
     windowsHide: true,
@@ -36,19 +36,26 @@ async function waitForApi() {
 
 try {
   const health = await waitForApi()
-  const issue = await request('/issues', {
+  const email = `smoke-${Date.now()}@example.com`
+  const auth = await request('/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'API Smoke', email, password: 'password123' }),
+  })
+  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${auth.token}` }
+  const issue = await request('/issues', {
+    method: 'POST',
+    headers,
     body: JSON.stringify({ title: 'API smoke test', type: 'Task', priority: 'High' }),
   })
   const updated = await request(`/issues/${issue.id}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ status: 'Done' }),
   })
-  await request(`/issues/${issue.id}`, { method: 'DELETE' })
+  await request(`/issues/${issue.id}`, { method: 'DELETE', headers })
 
-  console.log(JSON.stringify({ database: health.database, created: issue.id, updatedStatus: updated.status, deleted: true }))
+  console.log(JSON.stringify({ database: health.database, authenticated: auth.user.email === email, created: issue.id, updatedStatus: updated.status, deleted: true }))
 } finally {
   serverProcess?.kill()
 }
