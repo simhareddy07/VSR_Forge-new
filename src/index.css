@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+	--font-sans: 'DM Sans', sans-serif;
+	--font-display: 'Playfair Display', serif;
+}
+
+body { min-width: 320px; background: #f5f7f5; color: #27313b; }
