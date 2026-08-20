@@ -10,8 +10,8 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const issueApi = {
-  list: () => request<Issue[]>('/issues'),
-  create: (input: { title: string; type: IssueType; priority: Priority }) => request<Issue>('/issues', { method: 'POST', body: JSON.stringify(input) }),
-  updateStatus: (id: string, status: string) => request<Issue>(`/issues/${id}`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  list: (projectId?: string) => request<Issue[]>(projectId ? `/issues?projectId=${encodeURIComponent(projectId)}` : '/issues'),
+  create: (input: { title: string; type: IssueType; priority: Priority; projectId: string; assigneeId: string }) => request<Issue>('/issues', { method: 'POST', body: JSON.stringify(input) }),
+  updateStatus: (id: string, status: string, assigneeId?: string) => request<Issue>(`/issues/${id}`, { method: 'PATCH', body: JSON.stringify({ status, ...(assigneeId ? { assigneeId } : {}) }) }),
   archive: (id: string) => request<void>(`/issues/${id}`, { method: 'DELETE' }),
 }
