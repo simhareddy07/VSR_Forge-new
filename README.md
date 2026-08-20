@@ -1,10 +1,20 @@
-# VSR_Forge
+# VSR Forge
 
 ### Developer Project & Issue Management Platform
 
 VSR Forge is a **MERN stack-based project management platform** designed for software development teams to manage projects, bugs, tasks, team members, and project progress from one place.
 
 Instead of managing bugs and tasks through spreadsheets, messages, or multiple tools, VSR Forge provides a centralized platform where developers and project managers can collaborate and track the complete development workflow.
+
+---
+
+## 🏗️ Architecture
+
+```text
+frontend/     React + TypeScript + Vite application
+backend/src/  Express + MongoDB API
+scripts/      API smoke tests
+```
 
 ---
 
@@ -67,18 +77,18 @@ The dashboard provides an overview of the project's progress.
 
 ---
 
-## ✨ Core Features
+# ✨ Core Features
 
-### 🔐 Authentication
+## 🔐 Authentication
 
 * User registration
 * User login
 * JWT authentication
-* Secure password hashing
+* Secure password hashing with bcrypt
 * Logout
 * Protected routes
 
-### 👥 User Roles
+## 👥 User Roles
 
 Different permissions for:
 
@@ -86,7 +96,7 @@ Different permissions for:
 * Developer
 * Viewer
 
-### 📁 Project Management
+## 📁 Project Management
 
 * Create projects
 * Edit projects
@@ -95,9 +105,9 @@ Different permissions for:
 * Set project deadlines
 * View project progress
 
-### 🐛 Issue Management
+## 🐛 Issue Management
 
-Create and manage:
+Users can create and manage:
 
 * Bugs
 * Tasks
@@ -107,17 +117,21 @@ Create and manage:
 
 Each issue contains:
 
-* Title
-* Description
-* Type
-* Priority
-* Status
-* Assignee
-* Creator
-* Due date
-* Creation date
+```text
+Issue ID
+Title
+Description
+Type
+Priority
+Status
+Project
+Assignee
+Creator
+Due Date
+Creation Date
+```
 
-### 📋 Kanban Board
+## 📋 Kanban Board
 
 Issues can be organized using a Kanban board:
 
@@ -143,20 +157,20 @@ Issues can be organized using a Kanban board:
 └──────────┘
 ```
 
-### 💬 Comments
+## 💬 Comments
 
 Developers can discuss issues directly inside the platform.
 
-### 📎 File Attachments
+## 📎 File Attachments
 
-Upload:
+Users can upload:
 
 * Screenshots
 * Error logs
 * Documents
 * Other project files
 
-### 🔍 Search & Filtering
+## 🔍 Search & Filtering
 
 Search issues by:
 
@@ -171,7 +185,7 @@ Filter by:
 * Issue type
 * Assignee
 
-### 🔔 Notifications
+## 🔔 Notifications
 
 Users receive notifications when:
 
@@ -181,9 +195,9 @@ Users receive notifications when:
 * They are mentioned
 * A deadline is approaching
 
-### 📊 Analytics Dashboard
+## 📊 Analytics Dashboard
 
-Display:
+The dashboard can display:
 
 * Total issues
 * Open issues
@@ -193,9 +207,9 @@ Display:
 * Developer workload
 * Project completion percentage
 
-### 📝 Activity History
+## 📝 Activity History
 
-Track important project actions:
+Important project actions are tracked:
 
 ```text
 Vijay created BUG-101
@@ -214,13 +228,13 @@ Rahul marked BUG-101 as DONE
 
 # 🚀 Advanced Features
 
-These can be added after the core application is working.
+These features can be added after the core application is working.
 
-### ⚡ Real-Time Updates
+## ⚡ Real-Time Updates
 
 Use **Socket.io** so changes appear immediately without refreshing the page.
 
-### 🤖 AI Issue Classification
+## 🤖 AI Issue Classification
 
 Users describe an issue and the system can suggest:
 
@@ -230,11 +244,11 @@ Category: Authentication
 Priority: High
 ```
 
-### 🔎 Duplicate Issue Detection
+## 🔎 Duplicate Issue Detection
 
-When a developer creates an issue, VSR Forge can search existing issues and identify potentially similar ones.
+When a developer creates an issue, VSR Forge can search existing issues and identify potentially similar issues.
 
-### 🔗 GitHub Integration
+## 🔗 GitHub Integration
 
 Connect a project with a GitHub repository and associate:
 
@@ -251,6 +265,7 @@ with VSR Forge issues.
 ## Frontend
 
 * React.js
+* TypeScript
 * Vite
 * Tailwind CSS
 * React Router
@@ -302,7 +317,7 @@ with VSR Forge issues.
                             │
                     ┌───────▼───────┐
                     │    Express    │
-                    │    + Node.js  │
+                    │   + Node.js   │
                     └───────┬───────┘
                             │
                     ┌───────▼───────┐
@@ -318,7 +333,7 @@ with VSR Forge issues.
 
 ---
 
-# 🗄️ Main Database Collections
+# 🗄️ Database Collections
 
 ```text
 Users
@@ -329,7 +344,7 @@ Notifications
 ActivityLogs
 ```
 
-### User
+## User
 
 ```text
 name
@@ -340,7 +355,9 @@ avatar
 createdAt
 ```
 
-### Project
+Passwords are stored as **bcrypt hashes**. Plain-text passwords are never stored or returned.
+
+## Project
 
 ```text
 name
@@ -352,7 +369,7 @@ deadline
 createdAt
 ```
 
-### Issue
+## Issue
 
 ```text
 issueId
@@ -370,7 +387,15 @@ createdAt
 
 ---
 
-# 🔌 Main API Endpoints
+# 🔌 API Endpoints
+
+## Health
+
+```text
+GET /api/health
+```
+
+Checks the API and database mode.
 
 ## Authentication
 
@@ -378,6 +403,18 @@ createdAt
 POST /api/auth/register
 POST /api/auth/login
 GET  /api/auth/me
+```
+
+Development-only endpoint:
+
+```text
+GET /api/auth/debug-users
+```
+
+This reports account emails and whether a bcrypt hash exists. It is disabled when:
+
+```text
+NODE_ENV=production
 ```
 
 ## Projects
@@ -415,9 +452,57 @@ GET /api/projects/:id/analytics
 
 ---
 
+# 🗃️ Database Configuration
+
+The API uses MongoDB when `MONGODB_URI` is configured.
+
+Add the following to the backend `.env` file:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+NODE_ENV=development
+```
+
+If MongoDB is unavailable, the API can use an **in-memory store for development/testing**. Data stored in memory will not persist after the server restarts.
+
+---
+
+# ▶️ Run Locally
+
+## Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+## Backend
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+The API runs locally on:
+
+```text
+http://localhost:4000
+```
+
+Health check:
+
+```text
+http://localhost:4000/api/health
+```
+
+---
+
 # 🔐 Security
 
-VSR Forge will implement:
+VSR Forge implements:
 
 * JWT authentication
 * Password hashing with bcrypt
@@ -432,35 +517,60 @@ VSR Forge will implement:
 
 # 📅 Development Plan
 
-The project is planned to be developed incrementally so that the basic application works before advanced features are added.
+## Phase 1 — Project Setup & Authentication
 
-### Phase 1
+* MERN project setup
+* MongoDB connection
+* User registration
+* User login
+* JWT authentication
 
-Project setup and authentication
+## Phase 2 — Project & Team Management
 
-### Phase 2
+* Create projects
+* Manage projects
+* Add team members
+* Project deadlines
 
-Project and team management
+## Phase 3 — Issue Management
 
-### Phase 3
+* Create issues
+* Edit issues
+* Delete/archive issues
+* Assign developers
+* Issue filtering
 
-Issue management
+## Phase 4 — Kanban & Dashboard
 
-### Phase 4
+* Kanban board
+* Drag-and-drop status updates
+* Project dashboard
+* Progress tracking
 
-Kanban board and dashboard
+## Phase 5 — Collaboration
 
-### Phase 5
+* Comments
+* Notifications
+* Activity history
+* File attachments
 
-Comments, notifications and activity history
+## Phase 6 — Analytics & Advanced Features
 
-### Phase 6
+* Analytics
+* Real-time updates
+* AI issue classification
+* Duplicate issue detection
+* GitHub integration
 
-Analytics and advanced features
+## Phase 7 — Testing & Deployment
 
-### Phase 7
-
-Testing, deployment and documentation
+* API testing
+* Frontend testing
+* Error handling
+* Docker
+* CI/CD
+* Deployment
+* Documentation
 
 ---
 
@@ -480,6 +590,8 @@ The project demonstrates practical knowledge of:
 * Data visualization
 * Cloud storage
 * Software engineering practices
+* Git and GitHub workflows
+* Testing and deployment
 
 ---
 
@@ -487,12 +599,11 @@ The project demonstrates practical knowledge of:
 
 **Vijay Simha Reddy**
 
-Built using the MERN stack.
+Built using the **MERN stack**.
 
 ---
 
-## ⭐ Future Improvements   
-
+# ⭐ Future Improvements
 
 * Mobile application
 * Advanced GitHub integration

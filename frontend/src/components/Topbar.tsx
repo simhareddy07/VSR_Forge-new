@@ -1,0 +1,8 @@
+import { Bell, LogOut } from 'lucide-react'
+import { Avatar } from './Avatar'
+import type { User } from '../auth'
+
+export function Topbar({ onNotify, onProfile, onLogout, user }: { onNotify: () => void; onProfile: () => void; onLogout: () => void; user: User }) {
+  const initials = user.name.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase()
+  return <header className="flex h-[72px] items-center justify-between border-b border-[#e5e8e5] bg-[#fbfcfb] px-5 sm:px-10 lg:px-14"><div className="flex items-center gap-3 text-xs"><span className="text-[#9ba5aa]">Projects</span><b className="font-normal text-[#c5cacb]">/</b><strong>Pulse Commerce</strong></div><div className="flex items-center gap-5"><button onClick={onNotify} className="relative border-0 bg-transparent p-1 text-[#829097]" aria-label="Notifications"><Bell size={18} /><i className="absolute right-0 top-0 h-1.5 w-1.5 rounded-full bg-[#de6e5f]" /></button><button onClick={onProfile} className="flex items-center gap-3 rounded-lg border border-[#e1e8e3] bg-white px-3 py-2 text-left shadow-sm hover:border-[#a9cdb9]" aria-label="Open profile"><Avatar initials={initials} /><span className="hidden sm:block"><p className="text-xs font-bold text-[#3d4b52]">{user.name}</p><p className="text-[10px] text-[#8a969c]">{user.role}</p></span></button><button onClick={onLogout} className="flex items-center gap-2 rounded-md border border-[#e1e8e3] px-3 py-2 text-xs font-bold text-[#68767a] hover:border-[#d47d70] hover:text-[#b34f42]" aria-label="Log out" title="Log out"><LogOut size={15} /><span className="hidden sm:inline">Logout</span></button></div></header>
+}
